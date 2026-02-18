@@ -2,6 +2,10 @@ import React from "react";
 import { motion } from "framer-motion";
 import { FcGoogle } from "react-icons/fc";
 import { FiCheckCircle } from "react-icons/fi";
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "../utils/firebase";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 const Auth = () => {
   const features = [
@@ -22,6 +26,40 @@ const Auth = () => {
     },
   ];
 
+  const handleGoogleSignIn = async () => {
+    try {
+      // Sign in with Firebase
+      const response = await signInWithPopup(auth, provider);
+      const user = response.user;
+      const name = user.displayName;
+      const email = user.email;
+      const profilePic = user.photoURL;
+
+      // Send data to backend
+      const backendResponse = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/google`, {
+        name,
+        email,
+        profilePic,
+      }, {
+        withCredentials: true, // Important to include cookies in the request
+      });
+
+      const data = await backendResponse.data;
+
+      if (data.success) {
+        toast.success(`Welcome ${data.user.name}!`);
+        // You can store user data in context/redux or redirect to home
+        console.log("User data:", data.user);
+        // TODO: Redirect to home page or save user to state
+      } else {
+        toast.error(data.message || "Authentication failed");
+      }
+    } catch (error) {
+      console.error("Error signing in with Google:", error);
+      toast.error("Failed to sign in with Google");
+    }
+  }
+
   return (
     <div className=" min-h-screen overflow-hidden bg-gradient-to-br from-blue-50 via-white to-green-50">
 
@@ -29,14 +67,14 @@ const Auth = () => {
         initial={{ opacity: 0, y: -18 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className=" mx-auto mt-6 flex max-w-6xl flex-col gap-6 rounded-3xl border border-white/60 bg-white/70 p-10 text-center shadow-xl backdrop-blur-lg md:flex-row md:items-center md:justify-between md:text-left"
+        className=" mx-auto mt-6 flex max-w-6xl flex-col gap-6 rounded-3xl border border-white/60 bg-linear-to-r from-gray-800 to-slate-900  p-10 text-center shadow-xl backdrop-blur-lg md:flex-row md:items-center md:justify-between md:text-left"
       >
         <div>
           <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-blue-700">
             <span className=" text-blue-600">✨</span>
             AI note-making platform
           </p>
-          <h1 className="text-4xl font-semibold text-slate-900 md:text-2xl">
+          <h1 className="text-4xl font-semibold text-slate-100 md:text-2xl">
             ExamNotesAi helps you learn twice as fast with AI-crafted insights.
           </h1>
         </div>
@@ -66,7 +104,7 @@ const Auth = () => {
             </div>
 
             <button
-           
+              onClick={handleGoogleSignIn}
               className=" flex w-full items-center justify-center gap-3 rounded-full px-5 py-3 text-lg font-semibold text-white bg-gray-800 hover:bg-gray-900 active:scale-105  shadow-lg transition  duration-350 cursor-pointer hover:shadow-xl "
             >
               <FcGoogle className="text-2xl" />

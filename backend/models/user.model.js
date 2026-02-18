@@ -10,6 +10,10 @@ const userSchema = new Schema({
         required: true,
         unique: true
     },
+    profilePic:{
+        type: String,
+        default: null
+    },
     credits:{
         type: Number,
         default: 50,
