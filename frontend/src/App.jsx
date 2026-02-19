@@ -5,7 +5,7 @@ import Auth from './pages/Auth'
 import { Toaster } from 'react-hot-toast';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { loadUserFromStorage, selectIsAuthenticated } from './store/userSlice';
+import { loadUserFromStorage, selectIsAuthenticated } from './redux/userSlice';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -13,7 +13,7 @@ const App = () => {
 
   useEffect(() => {
     dispatch(loadUserFromStorage());
-  }, []);
+  }, [dispatch]);
 
   return (
     <div>

@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { setUser } from "../store/userSlice";
+import { setUser } from "../redux/userSlice";
 import { useNavigate } from "react-router-dom";
 
 const Auth = () => {

@@ -27,7 +27,7 @@ const userSlice = createSlice({
     },
     setLoading(state, action) {
       state.loading = action.payload;
-    },
+    }, 
     loadUserFromStorage(state) {
       const storedUser = localStorage.getItem('user');
       if (storedUser) {
