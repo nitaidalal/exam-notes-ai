@@ -1,10 +1,20 @@
 import React from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, Navigate } from 'react-router-dom'
 import Home from './pages/Home'
 import Auth from './pages/Auth'
 import { Toaster } from 'react-hot-toast';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { loadUserFromStorage, selectIsAuthenticated } from './store/userSlice';
 
 const App = () => {
+  const dispatch = useDispatch();
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+
+  useEffect(() => {
+    dispatch(loadUserFromStorage());
+  }, []);
+
   return (
     <div>
       <Toaster
@@ -64,8 +74,14 @@ const App = () => {
         }}
       />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/auth" element={<Auth />} />
+        <Route 
+          path="/" 
+          element={isAuthenticated ? <Home /> : <Navigate to="/auth" />} 
+        />
+        <Route 
+          path="/auth" 
+          element={!isAuthenticated ? <Auth /> : <Navigate to="/" />} 
+        />
       </Routes>
     </div>
   );

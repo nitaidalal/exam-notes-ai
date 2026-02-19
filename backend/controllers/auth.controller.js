@@ -16,9 +16,10 @@ export const googleAuth = async (req, res) => {
 
         // Check if user already exists
         let user = await User.findOne({ email });
-
+        let isNewUser = false;
         if (!user) {
-        
+            isNewUser = true;
+
             // Create new user
             let cloudinaryUrl = null;
             
@@ -34,7 +35,7 @@ export const googleAuth = async (req, res) => {
                     });
                 }
             }
-            user = User.create({
+            user =  await User.create({
                 name,
                 email,
                 profilePic: cloudinaryUrl || null
@@ -53,10 +54,9 @@ export const googleAuth = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
         });
 
-        // Send response
         return res.status(200).json({
             success: true,
-            message: user.isNew ? "User created successfully" : "Login successful",
+            message: isNewUser ? "User created successfully" : "Login successful",
             user: {
                 id: user._id,
                 name: user.name,
@@ -72,7 +72,22 @@ export const googleAuth = async (req, res) => {
         console.error("Error in googleAuth:", error);
         return res.status(500).json({ 
             success: false, 
-            message: "Internal server error",
+            error: error.message 
+        });
+    }
+}
+
+export const logout = (req, res) => {
+    try {
+        res.clearCookie('token');
+        return res.status(200).json({   
+            success: true,
+            message: "Logged out successfully"
+        });
+    } catch(error){
+        console.error("Error in logout:", error);
+        return res.status(500).json({ 
+            success: false, 
             error: error.message 
         });
     }

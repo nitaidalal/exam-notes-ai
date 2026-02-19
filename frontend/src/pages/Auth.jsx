@@ -6,8 +6,15 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../utils/firebase";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setUser } from "../store/userSlice";
+import { useNavigate } from "react-router-dom";
 
 const Auth = () => {
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const features = [
     {
       title: "50 free credit to start",
@@ -28,6 +35,7 @@ const Auth = () => {
 
   const handleGoogleSignIn = async () => {
     try {
+      setLoading(true);
       // Sign in with Firebase
       const response = await signInWithPopup(auth, provider);
       const user = response.user;
@@ -41,115 +49,138 @@ const Auth = () => {
         email,
         profilePic,
       }, {
-        withCredentials: true, // Important to include cookies in the request
+        withCredentials: true, 
       });
 
       const data = await backendResponse.data;
 
       if (data.success) {
+        // Save user to Redux store (which also saves to localStorage)
+        dispatch(setUser(data.user));
         toast.success(`Welcome ${data.user.name}!`);
-        // You can store user data in context/redux or redirect to home
-        console.log("User data:", data.user);
-        // TODO: Redirect to home page or save user to state
+        // Redirect to home page
+        navigate('/');
       } else {
         toast.error(data.message || "Authentication failed");
       }
     } catch (error) {
       console.error("Error signing in with Google:", error);
       toast.error("Failed to sign in with Google");
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
-    <div className=" min-h-screen overflow-hidden bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <div className="min-h-screen bg-gray-100 relative overflow-hidden">
+      {/* Soft background glow */}
+      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-emerald-200 rounded-full blur-3xl opacity-30"></div>
+      <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-teal-200 rounded-full blur-3xl opacity-30"></div>
 
-      <motion.header
-        initial={{ opacity: 0, y: -18 }}
+      {/* HERO */}
+      <motion.section 
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className=" mx-auto mt-6 flex max-w-6xl flex-col gap-6 rounded-3xl border border-white/60 bg-linear-to-r from-gray-800 to-slate-900  p-10 text-center shadow-xl backdrop-blur-lg md:flex-row md:items-center md:justify-between md:text-left"
+        className="relative z-10 max-w-6xl mx-auto px-6 pt-16 text-center"
       >
-        <div>
-          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-blue-700">
-            <span className=" text-blue-600">✨</span>
-            AI note-making platform
-          </p>
-          <h1 className="text-4xl font-semibold text-slate-100 md:text-2xl">
-            ExamNotesAi helps you learn twice as fast with AI-crafted insights.
-          </h1>
-        </div>
-      </motion.header>
-
-      <main className=" max-w-7xl mx-auto grid  gap-14 px-6 py-10 grid-cols-1 md:grid-cols-2">
-        <motion.div
-          initial={{ opacity: 0, y: 22 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="relative overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-10 shadow-2xl backdrop-blur"
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-700 border border-emerald-500 rounded-full text-xs font-semibold"
         >
-        
+          ✨ AI Note-Making Platform
+        </motion.div>
 
-          <div className="space-y-6">
-            <div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-4 py-1 text-xs font-semibold uppercase tracking-wider text-green-700">
-                Access in under 60 seconds
-              </span>
-              <h3 className="mt-4 text-3xl font-semibold text-slate-900">
-                Sign in to unlock your personalised study hub.
-              </h3>
-              <p className="mt-3 text-sm text-slate-600">
-                Connect your Google account to sync across devices, keep notes
-                private, and resume right where you left off.
-              </p>
-            </div>
+        <motion.h1 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+          className="mt-6 text-5xl md:text-6xl font-extrabold tracking-tight text-gray-900 leading-tight"
+        >
+          Study smarter.
+          <span className="text-emerald-600"> Not longer.</span>
+        </motion.h1>
 
-            <button
-              onClick={handleGoogleSignIn}
-              className=" flex w-full items-center justify-center gap-3 rounded-full px-5 py-3 text-lg font-semibold text-white bg-gray-800 hover:bg-gray-900 active:scale-105  shadow-lg transition  duration-350 cursor-pointer hover:shadow-xl "
-            >
-              <FcGoogle className="text-2xl" />
-              Sign in with Google
-            </button>
+        <motion.p 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+          className="mt-6 text-lg text-gray-600 max-w-2xl mx-auto"
+        >
+          Auto-generate structured notes, mind maps, and revision tools in
+          seconds. Designed for serious students.
+        </motion.p>
+      </motion.section>
 
-            <div className="rounded-2xl border border-white/70 bg-white/60 p-4 text-xs text-slate-500">
-              <p className="font-medium text-slate-600">What you get:</p>
-              <ul className="mt-2 space-y-1">
-                <li>• 50 free credits for high-quality exam notes & charts.</li>
-                <li>• Smart revision timelines and streak tracking.</li>
-                <li>• Export to PDF instantly.</li>
-              </ul>
-            </div>
+      {/* MAIN CONTENT */}
+      <section className="relative z-10 max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-16 items-center">
+        {/* LEFT CARD */}
+        <motion.div 
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.5, duration: 0.7 }}
+          className="bg-white rounded-3xl p-10 shadow-xl border border-gray-100"
+        >
+          <h3 className="text-2xl font-bold text-gray-900">Welcome back 👋</h3>
+
+          <p className="mt-3 text-gray-600 text-sm">
+            Sign in with Google to access your personalized AI study hub.
+          </p>
+
+          <button
+            onClick={handleGoogleSignIn}
+            disabled={loading}
+            className="mt-8 w-full flex items-center justify-center gap-3 bg-gray-900 text-white py-4 rounded-xl font-semibold text-lg hover:bg-black transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50"
+          >
+            {loading ? (
+              <span className="animate-pulse">Signing in...</span>
+            ) : (
+              <>
+                <FcGoogle className="text-2xl" />
+                Continue with Google
+              </>
+            )}
+          </button>
+
+          <div className="mt-8 text-sm text-gray-500">
+            By continuing, you agree to our Terms & Privacy Policy.
           </div>
         </motion.div>
 
-        {/* right content */}
-        <motion.div
-          initial={{ opacity: 0, y: 22 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="space-y-10"
-        >
+        {/* RIGHT FEATURES */}
+        <div className="space-y-6">
           {features.map((feature, index) => (
             <motion.div
-            initial={{ opacity: 0, x: -18 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.3 }}
-             key={index} className="flex bg-gray-800 rounded-md items-start p-3 shadow-md gap-4">
-              <FiCheckCircle className="text-green-500 text-2xl mt-1" />
-              <div>
-                <h4 className="text-xl font-semibold text-white">
-                  {feature.title}
-                </h4>
-                <p className="mt-1 text-sm text-slate-400">
-                  {feature.description}
-                </p>
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              transition={{ delay: index * 0.3 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{once:true}}
+              className="bg-white/70 backdrop-blur-xl border border-gray-200 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-102"
+            >
+              <div className="flex gap-4 items-start">
+                <div className="bg-emerald-100 p-2 rounded-full">
+                  <FiCheckCircle className="text-emerald-600 text-xl" />
+                </div>
+
+                <div>
+                  <h4 className="font-semibold text-lg text-gray-900">
+                    {feature.title}
+                  </h4>
+                  <p className="text-gray-600 text-sm mt-1 leading-relaxed">
+                    {feature.description}
+                  </p>
+                </div>
               </div>
             </motion.div>
           ))}
-        </motion.div>
-      </main>
+        </div>
+      </section>
     </div>
   );
+  
 };
 
 export default Auth;
