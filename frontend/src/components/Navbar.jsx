@@ -5,6 +5,11 @@ import { useNavigate } from "react-router-dom";
 import {FaPlusCircle} from 'react-icons/fa';
 import toast from "react-hot-toast";
 import axios from "axios";
+import { motion } from "framer-motion";
+
+
+//  import logout icon 
+import { FiLogOut } from "react-icons/fi";
 
 const Navbar = () => {
   const user = useSelector(selectUser);
@@ -45,11 +50,17 @@ const Navbar = () => {
     }
 
   return (
-    <nav className="sticky w-full top-0 z-50 bg-white backdrop-blur-lg bg-opacity-90 border-b border-gray-200 shadow-lg">
+    <motion.nav
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+     className="sticky w-full top-0 z-50 bg-white backdrop-blur-lg bg-opacity-90 border-b border-gray-200 shadow-lg">
       <div className="w-full max-w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-14">
         <div className="flex justify-between items-center h-14 sm:h-16">
           {/* Logo Section */}
-          <div className="flex items-center gap-2 sm:gap-3 group cursor-pointer">
+          <div
+          onClick={() => navigate('/')}
+           className="flex  items-center gap-2 sm:gap-3 group cursor-pointer">
             <div className="relative h-8 w-8 sm:h-10 sm:w-10 overflow-hidden">
               <img
                 src="/logo.png"
@@ -59,7 +70,7 @@ const Navbar = () => {
             </div>
 
             <div>
-              <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300">
+              <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent  transition-transform duration-300">
                 ExamNotesAi
               </h1>
               <p className="text-xs text-gray-500 font-medium hidden sm:block">
@@ -72,39 +83,39 @@ const Navbar = () => {
           <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
             {/* Credits Badge */}
             <div
-              
               onClick={() => {
                 setIsCreditsDropdownOpen(!isCreditsDropdownOpen);
                 setIsProfileDropdownOpen(false);
               }}
-              className="relative group hidden sm:block"
+              className="relative group hidden sm:block "
+              title="Your total Credits"
             >
-              <div className="relative cursor-pointer bg-gradient-to-r from-blue-50 to-purple-50 px-2 sm:px-3 md:px-5 py-1.5 sm:py-2 border-2 border-transparent bg-clip-padding rounded-full hover:border-blue-300 transition-all duration-300 shadow-md hover:shadow-lg">
+              <div className="relative cursor-pointer bg-gradient-to-r from-blue-50 to-purple-50 hover:bg-emerald-300 px-2 sm:px-3 md:px-5 py-1.5 sm:py-2 border-2 border-transparent bg-clip-padding rounded-full hover:border-emerald-400 transition-all duration-300 shadow-md hover:shadow-lg">
                 <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
                   <div className="flex items-center gap-0">
                     <span className="text-lg sm:text-xl md:text-2xl">💎</span>
-                    <span className="text-xs sm:text-sm font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    <span className="text-xs sm:text-sm font-bold text-gray-800">
                       {credits}
                     </span>
                   </div>
                   <div>
-                    <FaPlusCircle className="text-base sm:text-lg md:text-xl text-blue-500" />
+                    <FaPlusCircle className="text-base sm:text-lg md:text-xl text-emerald-500" />
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Profile Dropdown */}
-            <div className="relative" ref={dropdownRef}>
+            <div className="relative "  ref={dropdownRef} title="Profile">
               <button
                 onClick={() => {
                   setIsProfileDropdownOpen(!isProfileDropdownOpen);
                   setIsCreditsDropdownOpen(false);
                 }}
-                className="flex items-center gap-1 sm:gap-2 md:gap-3 p-1 pr-2 sm:pr-3 rounded-full bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 border-2 border-gray-200 hover:border-blue-300 transition-all duration-300 shadow-md hover:shadow-xl group"
+                className="flex items-center gap-1 sm:gap-2 md:gap-3 p-1 pr-2 sm:pr-3 rounded-full bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 border-2 border-gray-200 hover:border-emerald-300 transition-all duration-300 shadow-md hover:shadow-xl group"
               >
                 <div className="relative">
-                  <div className="relative h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 rounded-full overflow-hidden border-2 border-white shadow-lg ring-2 ring-gray-200 group-hover:ring-blue-400 transition-all duration-300">
+                  <div className="relative h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 rounded-full overflow-hidden border-2 border-white shadow-lg ring-2 ring-gray-200 group-hover:ring-emerald-400 transition-all duration-300">
                     {user?.profilePic ? (
                       <img
                         src={user.profilePic}
@@ -119,7 +130,7 @@ const Navbar = () => {
                   </div>
                 </div>
                 <div className="text-left hidden sm:block">
-                  <p className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
+                  <p className="text-sm font-semibold text-gray-800 group-hover:text-emerald-600 transition-colors">
                     {user?.name || "User"}
                   </p>
                 </div>
@@ -143,18 +154,20 @@ const Navbar = () => {
               {/* Credits Dropdown */}
               {isCreditsDropdownOpen && (
                 <div className="absolute right-0 sm:right-auto sm:left-0 md:left-auto md:right-20 lg:right-24 mt-3 w-48 sm:w-52 md:w-56 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden animate-fadeIn">
-                  <div className="p-4 flex flex-col gap-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+                  <div className="p-4 flex flex-col gap-2 bg-gradient-to bg-white border-t-4 border-emerald-500 text-gray-800">
                     <p className="text-sm font-semibold">
                       You have{" "}
-                      <span className="font-bold text-green-300">
+                      <span className="font-extrabold text-emerald-600">
                         {credits}
                       </span>{" "}
                       credits
                     </p>
-                    <p className="text-xs text-blue-100">
+                    <p className="text-xs text-gray-600">
                       Use credits to generate AI notes,diagrams & PDFs
                     </p>
-                    <button className="bg-white text-blue-600 hover:bg-gray-100 font-semibold py-2 px-4 rounded-lg transition-colors duration-200 cursor-pointer">
+                    <button
+                      onClick={() => navigate('/pricing')}
+                      className="bg-emerald-500 hover:bg-emerald-600 font-semibold py-2 px-4 rounded-lg transition-colors duration-200 cursor-pointer text-white">
                       Buy More Credits
                     </button>
                   </div>
@@ -164,7 +177,7 @@ const Navbar = () => {
               {/*profile Dropdown Menu */}
               {isProfileDropdownOpen && (
                 <div className="absolute right-0 mt-3 w-64 sm:w-72 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden animate-fadeIn z-50">
-                  <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-4 text-white">
+                  <div className="bg-white border-t-4 border-emerald-500 p-4 text-gray-800">
                     <div className="flex items-center gap-3">
                       <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-white shadow-lg">
                         {user?.profilePic ? (
@@ -183,7 +196,7 @@ const Navbar = () => {
                         <p className="font-semibold text-lg">
                           {user?.name || "User"}
                         </p>
-                        <p className="text-xs text-blue-100">
+                        <p className="text-xs text-gray-600">
                           {user?.email || "user@example.com"}
                         </p>
                       </div>
@@ -193,36 +206,39 @@ const Navbar = () => {
                   <div className="p-2">
                     <button
                       onClick={() => setIsProfileDropdownOpen(false)}
-                      className="w-full text-left px-4 py-3 rounded-lg hover:bg-blue-50 transition-colors duration-200 flex items-center gap-3 group"
+                      className="w-full text-left px-4 py-3 cursor-pointer rounded-lg hover:bg-emerald-50 transition-colors duration-200 flex items-center gap-3 group"
                     >
                       <span className="text-xl group-hover:scale-110 transition-transform">
                         👤
                       </span>
-                      <span className="text-gray-700 font-medium group-hover:text-blue-600">
+                      <span className="text-gray-700 font-medium group-hover:text-emerald-600">
                         Profile
                       </span>
                     </button>
 
                     <button
                       onClick={() => setIsProfileDropdownOpen(false)}
-                      className="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 transition-colors duration-200 flex items-center gap-3 group"
+                      className="w-full text-left px-4 py-3 cursor-pointer rounded-lg hover:bg-emerald-50 transition-colors duration-200 flex items-center gap-3 group"
                     >
                       <span className="text-xl group-hover:scale-110 transition-transform">
                         ⚙️
                       </span>
-                      <span className="text-gray-700 font-medium group-hover:text-purple-600">
+                      <span className="text-gray-700 font-medium group-hover:text-emerald-600">
                         Settings
                       </span>
                     </button>
 
                     <button
-                      onClick={() => setIsProfileDropdownOpen(false)}
-                      className="w-full text-left px-4 py-3 rounded-lg hover:bg-green-50 transition-colors duration-200 flex items-center gap-3 group"
+                      onClick={() => {
+                        setIsProfileDropdownOpen(false);
+                        navigate('/pricing');
+                      }}
+                      className="w-full text-left px-4 py-3 rounded-lg cursor-pointer hover:bg-emerald-50 transition-colors duration-200 flex items-center gap-3 group"
                     >
                       <span className="text-xl group-hover:scale-110 transition-transform">
                         💎
                       </span>
-                      <span className="text-gray-700 font-medium group-hover:text-green-600">
+                      <span className="text-gray-700 font-medium group-hover:text-emerald-600">
                         Buy Credits
                       </span>
                     </button>
@@ -231,10 +247,10 @@ const Navbar = () => {
 
                     <button
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-3 rounded-lg hover:bg-red-50 transition-colors duration-200 flex items-center gap-3 group"
+                      className="w-full text-left px-4 py-3 rounded-lg cursor-pointer hover:bg-red-50 transition-colors duration-200 flex items-center gap-3 group"
                     >
                       <span className="text-xl group-hover:scale-110 transition-transform">
-                        🚪
+                        <FiLogOut className="text-red-600" />
                       </span>
                       <span className="text-red-600 font-medium group-hover:font-semibold">
                         Logout
@@ -247,7 +263,7 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-    </nav>
+    </motion.nav>
   );
 };
 
