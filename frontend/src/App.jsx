@@ -6,6 +6,9 @@ import { Toaster } from 'react-hot-toast';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadUserFromStorage, selectIsAuthenticated } from './redux/userSlice';
+import Pricing from './pages/Pricing';
+import History from './pages/History';
+import Notes from './pages/Notes';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -82,6 +85,10 @@ const App = () => {
           path="/auth" 
           element={!isAuthenticated ? <Auth /> : <Navigate to="/" />} 
         />
+
+        <Route path='/pricing' element={isAuthenticated ? <Pricing /> : <Navigate to="/auth" />} />
+        <Route path='/history' element={isAuthenticated ? <History /> : <Navigate to="/auth" />} />
+        <Route path="/notes" element={isAuthenticated?<Notes /> :<Navigate to="/auth" />} />
       </Routes>
     </div>
   );
